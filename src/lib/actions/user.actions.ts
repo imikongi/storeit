@@ -1,10 +1,11 @@
 "use server";
 
-import { createAdminClient } from "@/lib/appwrite";
+import { createAdminClient, createSessionClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { ID, Query } from "node-appwrite";
 import { parseStringify } from "@/lib/utils";
 import { cookies } from "next/headers";
+import { avatarPlaceholderUrl } from "../../../constants";
 
 //функция, которая делает запрос на получение пользователя по имэйлу
 const getUserByEmail = async (email: string) => {
@@ -60,8 +61,7 @@ export const createAccount = async ({
       {
         fullName,
         email,
-        avatar:
-          "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png",
+        avatar: avatarPlaceholderUrl,
         accountId,
       },
     );
@@ -94,4 +94,20 @@ export const verifySecret = async ({
   } catch (error) {
     handleError(error, "Failed to verify an OTP");
   }
+};
+
+export const getCurrentUser = async () => {
+  const { databases, account } = await createSessionClient();
+
+  const result = await account.get();
+
+  const user = await databases.listDocuments(
+    appwriteConfig.databaseId,
+    appwriteConfig.usersCollectionId,
+    [Query.equal("accountId", result.$id)],
+  );
+
+  if (user.total <= 0) return null;
+
+  return parseStringify(user.documents[0]);
 };
