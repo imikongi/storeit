@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { avatarPlaceholderUrl, navItems } from "../../constants";
+import { navItems } from "../../constants";
 import { usePathname } from "next/navigation";
 import { cn } from "../lib/utils";
 
@@ -40,7 +40,7 @@ const Sidebar = ({
       <nav className={"sidebar-nav"}>
         <ul className={"flex flex-1 flex-col gap-6"}>
           {navItems.map(({ url, name, icon }) => (
-            <Link href={name} key={url} className={"lg:w-full"}>
+            <Link href={url} key={url} className={"lg:w-full"}>
               <li
                 className={cn(
                   "sidebar-nav-item",

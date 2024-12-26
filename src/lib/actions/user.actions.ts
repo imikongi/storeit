@@ -95,7 +95,16 @@ export const verifySecret = async ({
   }
 };
 
+export const hasSession = async () => {
+  const session = (await cookies()).get("appwrite-session");
+  return session && session.value;
+};
+
 export const getCurrentUser = async () => {
+  if (!(await hasSession())) {
+    return null;
+  }
+
   const { databases, account } = await createSessionClient();
 
   const result = await account.get();
